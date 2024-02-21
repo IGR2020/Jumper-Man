@@ -4,6 +4,73 @@ from player import Player
 from pygame_tools import Button, blit_text, blit_surfaces_horizontal
 
 
+def change_background_menu():
+    global current_background_tile
+
+    run = True
+    clock = pygame.time.Clock()
+    fps = 60
+
+    previous_button = Button(
+        menu_button_images["Previous"],
+        (button_size * 4 - button_size / 2, 250 + button_size * 2.5),
+    )
+    next_button = Button(
+        menu_button_images["Next"],
+        (
+            (window_width - (button_size * 4)) - button_size / 2,
+            250 + button_size * 2.5,
+        ),
+    )
+
+    back_button = Button(menu_button_images["Back"], (0, 0))
+    tiles_display_surface = pygame.Surface((900, 150))
+    tiles_display_surface.fill((255, 255, 255))
+
+    x_offset = 226
+    current_choice = 3
+
+    while run:
+        clock.tick(fps)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if back_button.clicked():
+                    return
+                if previous_button.clicked():
+                    x_offset += 64
+                    current_choice -= 1
+                if next_button.clicked():
+                    current_choice += 1
+                    x_offset -= 64
+                if current_choice < 0 or current_choice >= len(list(background_images.keys())):
+                    current_choice = 0
+                current_background_tile = list(background_images.keys())[current_choice]
+
+        window.fill((255, 255, 255))
+        for i in range(window_width // background_tile_size + 1):
+            for j in range(window_height // background_tile_size + 1):
+                window.blit(
+                    background_images[current_background_tile],
+                    (i * background_tile_size, j * background_tile_size),
+                )
+        window.blit(tiles_display_surface, (0, 175))
+        blit_surfaces_horizontal(
+            tiles_display_surface,
+            [x_offset, 43],
+            *[surface for surface in background_images.values()]
+        )
+        back_button.display(window)
+        previous_button.display(window)
+        next_button.display(window)
+        pygame.display.update()
+
+    pygame.quit()
+    quit()
+
+
 def change_player_menu():
     run = True
     clock = pygame.time.Clock()
@@ -43,10 +110,16 @@ def change_player_menu():
                     current_selected -= 1
                 if next_button.clicked():
                     current_selected += 1
-                if current_selected < 0 or current_selected > len(images):
+                if current_selected < 0 or current_selected >= len(images):
                     current_selected = 0
 
         window.fill((255, 255, 255))
+        for i in range(window_width // background_tile_size + 1):
+            for j in range(window_height // background_tile_size + 1):
+                window.blit(
+                    background_images[current_background_tile],
+                    (i * background_tile_size, j * background_tile_size),
+                )
         back_button.display(window)
         next_button.display(window)
         previous_button.display(window)
@@ -70,6 +143,9 @@ def settings_menu():
     player_change_button = Button(
         menu_button_images["Settings"], (button_size, button_size)
     )
+    background_tile_change_button = Button(
+        menu_button_images["Settings"], (button_size, button_size * 2 + 16)
+    )
     name = None
 
     while run:
@@ -83,14 +159,33 @@ def settings_menu():
                     return name
                 if player_change_button.clicked():
                     name = change_player_menu()
+                if background_tile_change_button.clicked():
+                    change_background_menu()
 
         window.fill((255, 255, 255))
+        for i in range(window_width // background_tile_size + 1):
+            for j in range(window_height // background_tile_size + 1):
+                window.blit(
+                    background_images[current_background_tile],
+                    (i * background_tile_size, j * background_tile_size),
+                )
         back_button.display(window)
         player_change_button.display(window)
         blit_text(
             window,
             "Character Customization",
             (player_change_button.rect.right, player_change_button.y),
+            size=50,
+        )
+        background_tile_change_button.display(window)
+        blit_text(
+            window,
+            "Background Customization",
+            (
+                background_tile_change_button.rect.right,
+                background_tile_change_button.y,
+            ),
+            size=50,
         )
         pygame.display.update()
 
@@ -122,13 +217,19 @@ def main_menu():
             if event.type == pygame.MOUSEBUTTONUP:
                 if play_button.clicked():
                     player = Player(100, 100, main_characters[character])
-                    return player
+                    return player, current_background_tile
                 if settings_button.clicked():
                     name = settings_menu()
                     if name is not None:
                         character = name
 
         window.fill((255, 255, 255))
+        for i in range(window_width // background_tile_size + 1):
+            for j in range(window_height // background_tile_size + 1):
+                window.blit(
+                    background_images[current_background_tile],
+                    (i * background_tile_size, j * background_tile_size),
+                )
         play_button.display(window)
         settings_button.display(window)
         pygame.display.update()

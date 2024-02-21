@@ -1,7 +1,7 @@
 from settings import *
 import pygame
 from main_menu import main_menu
-from objects import Block, Spikes, SpikedBall, Platform
+from objects import Block, Spikes, SpikedBall, Platform, Trophy
 
 run = True
 clock = pygame.time.Clock()
@@ -32,7 +32,8 @@ objects = [
     SpikedBall(772, -88 - spiked_ball_size/2),
     Block(772, -88),
     Block(676, -88),
-    Block(292, -184)
+    Block(292, -184),
+    Trophy(288, -184 - check_point_size*2)
 ]
 
 
@@ -41,7 +42,7 @@ def display():
     for i in range(window_width // background_tile_size + 1):
         for j in range(window_height // background_tile_size + 1):
             window.blit(
-                background_images["Blue"],
+                background_images[current_background_tile],
                 (i * background_tile_size, j * background_tile_size),
             )
     for obj in objects:
@@ -51,7 +52,7 @@ def display():
 
 
 if __name__ == "__main__":
-    player = main_menu()
+    player, current_background_tile = main_menu()
     while run:
         clock.tick(fps)
         for event in pygame.event.get():

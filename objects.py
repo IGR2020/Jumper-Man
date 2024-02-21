@@ -58,4 +58,21 @@ class Platform(Object):
             self.sprite_sheet
         )
         self.image = self.sprite_sheet[sprite_index]
+        self.animation_count += 1
+        super().display(screen, x_offset, y_offset)
+
+class Trophy(Object):
+    def __init__(self, x, y, name="trophy"):
+        self.sprite_sheets = end_check_point_images
+        image = self.sprite_sheets["End (Idle)"][0]
+        width, height = check_point_size, check_point_size
+        super().__init__(image, x, y, width, height, name)
+        self.state = "End (Pressed) (64x64)"
+
+    def display(self, screen, x_offset, y_offset):
+        sprite_index = (self.animation_count // self.animate_speed) % len(
+            self.sprite_sheets[self.state]
+        )
+        self.image = self.sprite_sheets[self.state][sprite_index]
+        self.animation_count += 1
         super().display(screen, x_offset, y_offset)

@@ -1,3 +1,4 @@
+from settings import appearing_sprites
 import pygame
 
 
@@ -37,6 +38,13 @@ class Player(pygame.sprite.Sprite):
             self.sprite_sheet = "fall"
         elif self.x_vel != 0:
             self.sprite_sheet = "run"
+        if self.sprite_sheet == "hit":
+            sprites = appearing_sprites
+            sprite_index = (self.animation_count // 3) % len(sprites)
+            self.sprite = appearing_sprites[sprite_index]
+            self.animation_count += 1
+            self.update()
+            return
         sprite_sheet_name = self.sprite_sheet + "_" + self.direction
         sprites = self.sprites[sprite_sheet_name]
         sprite_index = (self.animation_count // self.animate_speed) % len(sprites)
@@ -60,22 +68,9 @@ class Player(pygame.sprite.Sprite):
     def is_hit(self):
         self.hit = True
         self.hit_count = 0
-
-    def attack(self):
-        self.fight = True
-        self.fight_count = 0
+        self.rect.x, self.rect.y = 100, 100
 
     def move(self, dx, dy, objects):
-        self.rect.x += dx
-        for obj in objects:
-            if self.rect.colliderect(obj.rect):
-                if dx > 0:
-                    self.rect.right = obj.rect.left
-                else:
-                    self.rect.left = obj.rect.right
-                if obj.name == "trap":
-                    self.is_hit()
-                    print("p")
         self.rect.y += dy
         for obj in objects:
             if self.rect.colliderect(obj.rect):
@@ -85,7 +80,15 @@ class Player(pygame.sprite.Sprite):
                     self.hit_head(obj)
                 if obj.name == "trap":
                     self.is_hit()
-                    print("p")
+        self.rect.x += dx
+        for obj in objects:
+            if self.rect.colliderect(obj.rect):
+                if dx > 0:
+                    self.rect.right = obj.rect.left
+                else:
+                    self.rect.left = obj.rect.right
+                if obj.name == "trap":
+                    self.is_hit()
 
     def move_left(self, vel):
         self.x_vel += -vel
@@ -123,8 +126,10 @@ class Player(pygame.sprite.Sprite):
     def script(self, fps, objects):
         if self.hit:
             self.hit_count += 1
-        if self.hit_count >= fps:
+        if self.hit_count >= fps // 2:
             self.hit = False
+            self.hit_count = 0
+
         self.y_vel += min(1, (self.fall_count / fps) * self.gravity)
         self.move(self.x_vel, self.y_vel, objects)
         self.fall_count += 1

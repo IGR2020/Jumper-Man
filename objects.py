@@ -36,7 +36,7 @@ class Spikes(Object):
 
 
 class Platform(Object):
-    def __init__(self, x, y, sprite_sheet, start_point, end_point, name="trap"):
+    def __init__(self, x, y, sprite_sheet, start_point, end_point, speed=3,  name="platform"):
         image = spiked_ball["Spiked Ball"]
         width, height = image.get_width(), image.get_height()
         super().__init__(image, x, y, width, height, name)
@@ -44,12 +44,13 @@ class Platform(Object):
         self.start_point = start_point
         self.end_point = end_point
         self.direction = True
+        self.speed = speed
 
     def display(self, screen, x_offset, y_offset):
         if self.direction:
-            self.rect.x -= 1
+            self.rect.x -= self.speed
         else:
-            self.rect.right += 1
+            self.rect.right += self.speed
         if self.rect.x < self.start_point:
             self.direction = False
         elif self.rect.right > self.end_point:
@@ -65,7 +66,7 @@ class Trophy(Object):
     def __init__(self, x, y, name="trophy"):
         self.sprite_sheets = end_check_point_images
         image = self.sprite_sheets["End (Idle)"][0]
-        width, height = check_point_size, check_point_size
+        width, height = image.get_width(), image.get_height()
         super().__init__(image, x, y, width, height, name)
         self.state = "End (Pressed) (64x64)"
 

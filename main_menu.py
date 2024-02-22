@@ -45,7 +45,9 @@ def change_background_menu():
                 if next_button.clicked():
                     current_choice += 1
                     x_offset -= 64
-                if current_choice < 0 or current_choice >= len(list(background_images.keys())):
+                if current_choice < 0 or current_choice >= len(
+                    list(background_images.keys())
+                ):
                     current_choice = 0
                 current_background_tile = list(background_images.keys())[current_choice]
 
@@ -193,18 +195,34 @@ def settings_menu():
     quit()
 
 
-def main_menu():
+def main_menu(current_level):
     run = True
     clock = pygame.time.Clock()
     fps = 60
 
     play_button = Button(
         menu_button_images["Play"],
-        (window_width / 2 - button_size / 2, window_height / 2 - button_size / 2),
+        (window_width / 2 - button_size / 2 - 10, window_height / 2 - button_size / 2),
     )
     settings_button = Button(
         menu_button_images["Settings"], (0, window_height - button_size)
     )
+
+    level_buttons = []
+    level = 0
+    for i in range(main_menu_level_formatting[0]):
+        for j in range(main_menu_level_formatting[1]):
+            level_buttons.append(
+                Button(
+                    level_images[level],
+                    (
+                        level_blit_point[0] + i * level_image_size + i * 20,
+                        level_blit_point[1] + j * level_image_size + j * 20,
+                    ),
+                    level,
+                )
+            )
+            level += 1
 
     character = "VirtualGuy"
 
@@ -217,11 +235,16 @@ def main_menu():
             if event.type == pygame.MOUSEBUTTONUP:
                 if play_button.clicked():
                     player = Player(100, 100, main_characters[character])
-                    return player, current_background_tile
+                    return player, current_background_tile, current_level
                 if settings_button.clicked():
                     name = settings_menu()
                     if name is not None:
                         character = name
+                for button in level_buttons:
+                    if button.clicked():
+                        current_level = button.information
+                        player = Player(100, 100, main_characters[character])
+                        return (player, current_background_tile, current_level)
 
         window.fill((255, 255, 255))
         for i in range(window_width // background_tile_size + 1):
@@ -230,6 +253,8 @@ def main_menu():
                     background_images[current_background_tile],
                     (i * background_tile_size, j * background_tile_size),
                 )
+        for button in level_buttons:
+            button.display(window)
         play_button.display(window)
         settings_button.display(window)
         pygame.display.update()

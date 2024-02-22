@@ -16,11 +16,13 @@ def blit_text(
 
 
 class Button:
-    def __init__(self, image, pos, scale=1):
+    def __init__(self, image: pygame.Surface, pos, *extra_info):
         self.x, self.y = pos
-        self.width, self.height = image.get_width() * scale, image.get_height() * scale
+        self.width, self.height = image.get_width(), image.get_height()
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.image = pygame.transform.scale(image, (self.width, self.height))
+        if extra_info is not None:
+            self.information = extra_info
 
     def clicked(self):
         pos = pygame.mouse.get_pos()
@@ -123,7 +125,9 @@ def set_to_grid(
     return new_coordinates
 
 
-def blit_surfaces_horizontal(window : pygame.Surface, start_location : list[int, int], *args):
+def blit_surfaces_horizontal(
+    window: pygame.Surface, start_location: list[int, int], *args
+):
     for surface in args:
         window.blit(surface, start_location)
         start_location[0] += surface.get_width()

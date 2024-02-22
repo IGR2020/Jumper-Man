@@ -1,4 +1,3 @@
-from settings import appearing_sprites
 import pygame
 
 
@@ -22,8 +21,11 @@ class Player(pygame.sprite.Sprite):
         self.speed = 5
 
     def display(self, screen, x_offset, y_offset):
+        if self.hit:
+            x_offset, y_offset = 0, 0
         self.update_sprite()
         screen.blit(self.sprite, (self.rect.x - x_offset, self.rect.y - y_offset))
+        return x_offset, y_offset
 
     def update_sprite(self):
         self.sprite_sheet = "idle"
@@ -38,13 +40,6 @@ class Player(pygame.sprite.Sprite):
             self.sprite_sheet = "fall"
         elif self.x_vel != 0:
             self.sprite_sheet = "run"
-        if self.sprite_sheet == "hit":
-            sprites = appearing_sprites
-            sprite_index = (self.animation_count // 3) % len(sprites)
-            self.sprite = appearing_sprites[sprite_index]
-            self.animation_count += 1
-            self.update()
-            return
         sprite_sheet_name = self.sprite_sheet + "_" + self.direction
         sprites = self.sprites[sprite_sheet_name]
         sprite_index = (self.animation_count // self.animate_speed) % len(sprites)
@@ -80,6 +75,8 @@ class Player(pygame.sprite.Sprite):
                     self.hit_head(obj)
                 if obj.name == "trap":
                     self.is_hit()
+                elif obj.name == "trophy":
+                    return True
         self.rect.x += dx
         for obj in objects:
             if self.rect.colliderect(obj.rect):
@@ -89,6 +86,8 @@ class Player(pygame.sprite.Sprite):
                     self.rect.left = obj.rect.right
                 if obj.name == "trap":
                     self.is_hit()
+                elif obj.name == "trophy":
+                    return True
 
     def move_left(self, vel):
         self.x_vel += -vel
@@ -128,9 +127,11 @@ class Player(pygame.sprite.Sprite):
             self.hit_count += 1
         if self.hit_count >= fps // 2:
             self.hit = False
-            self.hit_count = 0
 
         self.y_vel += min(1, (self.fall_count / fps) * self.gravity)
-        self.move(self.x_vel, self.y_vel, objects)
+        if self.move(self.x_vel, self.y_vel, objects):
+            return True
+        if self.rect.y > 1000:
+            self.is_hit()
         self.fall_count += 1
         self.controls()

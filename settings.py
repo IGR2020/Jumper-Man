@@ -1,5 +1,5 @@
 import pygame
-from pygame_tools import load_sprite_sheets, load_assets, load_sprite_sheet
+from pygame_tools import load_sprite_sheets, load_assets, load_assets_list
 from pygame.image import load
 
 window_width, window_height = 900, 500
@@ -33,8 +33,14 @@ background_tile_size = 64
 current_background_tile = "Blue"
 background_images = load_assets("assets/Background")
 
-appearing_sprites = load_sprite_sheet("MainCharacters/Appearing (96x96).png", 96, 96, (64, 64), False)
-
 start_check_point_images = load_sprite_sheets("assets/Items/Checkpoints/Start", 64, 64, False)
 end_check_point_images = load_sprite_sheets("assets/Items/Checkpoints/End", 64, 64, False)
 check_point_size = 64
+
+current_level = 0
+
+main_menu_level_formatting = 7, 2
+level_blit_point = 156, window_height // 2 + 70
+level_images = load_assets_list("assets/Menu/Levels", (64, 64))
+level_image_size = 64
+

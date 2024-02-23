@@ -37,7 +37,7 @@ class Spikes(Object):
 
 class Platform(Object):
     def __init__(self, x, y, sprite_sheet, start_point, end_point, speed=3,  name="platform"):
-        image = spiked_ball["Spiked Ball"]
+        image = sprite_sheet[0]
         width, height = image.get_width(), image.get_height()
         super().__init__(image, x, y, width, height, name)
         self.sprite_sheet = sprite_sheet

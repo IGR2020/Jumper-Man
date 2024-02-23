@@ -2,6 +2,7 @@ from settings import *
 import pygame
 from main_menu import main_menu
 from objects import Block, Spikes, SpikedBall, Platform, Trophy
+from pygame_tools import Button
 
 run = True
 clock = pygame.time.Clock()
@@ -9,6 +10,8 @@ fps = 60
 
 x_offset, y_offset = 0, 0
 scroll_width_area = 200
+
+close_button = Button(menu_button_images["Close"], (0, 0))
 
 objects = [
     [
@@ -34,7 +37,7 @@ objects = [
         Block(772, -88),
         Block(676, -88),
         Block(292, -184),
-        Trophy(288, -184 - check_point_size * 2),
+        Trophy(288, -184 - check_point_size),
     ],
     [
         Block(100, 200),
@@ -42,6 +45,14 @@ objects = [
         Platform(388, 200, platform_images["Brown On (32x8)"], 292, 1060),
         SpikedBall(580, 200 - spiked_ball_size / 2),
         Block(1060, 200),
+        Platform(964, 8, platform_images["Grey On (32x8)"], 772, 1000),
+        Block(676, -88),
+        Block(580, -184),
+        Block(484, -184),
+        Spikes(484, -184 - spike_size),
+        Block(388, -184),
+        Block(292, -184),
+        Trophy(292, -184 - check_point_size)
     ],
     [
         Block(100, 200),
@@ -77,6 +88,7 @@ def display():
             )
     for obj in objects[current_level]:
         obj.display(window, x_offset, y_offset)
+    close_button.display(window)
     x_offset, y_offset = player.display(window, x_offset, y_offset)
     pygame.display.update()
 
@@ -89,6 +101,10 @@ if __name__ == "__main__":
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+            if event.type == pygame.MOUSEBUTTONDOWN and close_button.clicked():
+                x_offset, y_offset = 0, 0
+                player, current_background_tile, current_level = main_menu(current_level)
+                current_level = current_level[0]
             player.event_controls(event)
         if (
             player.rect.right - x_offset >= window_width - scroll_width_area

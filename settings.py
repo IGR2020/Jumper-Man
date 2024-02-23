@@ -35,7 +35,7 @@ background_images = load_assets("assets/Background")
 
 start_check_point_images = load_sprite_sheets("assets/Items/Checkpoints/Start", 64, 64, False)
 end_check_point_images = load_sprite_sheets("assets/Items/Checkpoints/End", 64, 64, False)
-check_point_size = 64
+check_point_size = 128
 
 current_level = 0
 

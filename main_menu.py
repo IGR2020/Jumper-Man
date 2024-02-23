@@ -4,6 +4,19 @@ from player import Player
 from pygame_tools import Button, blit_text, blit_surfaces_horizontal
 
 
+class BetterButton(Button):
+    def __init__(self, image, pos, clicked_image, *args):
+        args = args[0]
+        super().__init__(image, pos, args)
+        self.clicked_image = clicked_image
+
+    def clicked(self):
+        returned = super().clicked()
+        if returned:
+            self.image, self.clicked_image = self.clicked_image, self.image
+        return returned
+
+
 def change_background_menu():
     global current_background_tile
 
@@ -213,12 +226,13 @@ def main_menu(current_level):
     for i in range(main_menu_level_formatting[0]):
         for j in range(main_menu_level_formatting[1]):
             level_buttons.append(
-                Button(
+                BetterButton(
                     level_images[level],
                     (
                         level_blit_point[0] + i * level_image_size + i * 20,
                         level_blit_point[1] + j * level_image_size + j * 20,
                     ),
+                    clicked_level_images[level],
                     level,
                 )
             )
@@ -232,6 +246,9 @@ def main_menu(current_level):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                for button in level_buttons:
+                    button.clicked()
             if event.type == pygame.MOUSEBUTTONUP:
                 if play_button.clicked():
                     player = Player(100, 100, main_characters[character])

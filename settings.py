@@ -43,4 +43,5 @@ main_menu_level_formatting = 7, 2
 level_blit_point = 156, window_height // 2 + 70
 level_images = load_assets_list("assets/Menu/Levels", (64, 64))
 level_image_size = 64
+clicked_level_images = load_assets_list("assets/Menu/Pressed Buttons", (64, 64))
 
